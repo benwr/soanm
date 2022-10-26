@@ -113,4 +113,6 @@ with open(f'{home}/.aws/config', 'w') as f:
   f.write(config_file)
 EOF
 
+nvim --headless +PlugInstall +q
+
 chezmoi init --apply benwr
