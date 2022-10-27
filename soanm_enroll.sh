@@ -81,7 +81,7 @@ asdf plugin-add rust || asdf install rust latest || asdf global rust latest
 
 echo args $@
 SEND_LINK=$1
-$CREDS=bw send receive $SEND_LINK
+CREDS=bw send receive $SEND_LINK
 
 xonsh << EOF
 import json
