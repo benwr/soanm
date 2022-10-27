@@ -79,11 +79,14 @@ nix-env -iA nixpkgs.bzip2 \
 
 asdf plugin-add rust || asdf install rust latest || asdf global rust latest
 
+echo args $@
 export SEND_LINK=$1
 
 xonsh << EOF
 import json
 import os
+
+echo grabbing send from $SEND_LINK
 
 creds = \$(bw send receive $SEND_LINK)
 
