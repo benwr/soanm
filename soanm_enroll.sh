@@ -87,7 +87,7 @@ xonsh << EOF
 import json
 import os
 
-creds = "$CREDS"
+creds = $CREDS
 
 home = os.path.expanduser("~")
 
