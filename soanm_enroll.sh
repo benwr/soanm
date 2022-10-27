@@ -76,12 +76,8 @@ nix-env -iA nixpkgs.bzip2 \
   nixpkgs.gnumake \
   nixpkgs.clang
 
-try:
-  asdf plugin-add rust
-  asdf install rust latest
-  asdf global rust latest
-except:
-  pass
+
+asdf plugin-add rust || asdf install rust latest || asdf global rust latest
 
 export SEND_LINK=$0
 
