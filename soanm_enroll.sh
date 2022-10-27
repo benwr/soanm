@@ -76,17 +76,20 @@ nix-env -iA nixpkgs.bzip2 \
   nixpkgs.gnumake \
   nixpkgs.clang
 
-asdf plugin-add rust
-asdf install rust latest
-asdf global rust latest
+try:
+  asdf plugin-add rust
+  asdf install rust latest
+  asdf global rust latest
+except:
+  pass
+
+export SEND_LINK=$0
 
 xonsh << EOF
 import json
 import os
 
-send_link = input().strip()
-
-creds = \$(bw send receive @(send_link))
+creds = \$(bw send receive $SEND_LINK)
 
 creds = json.loads(creds)
 
