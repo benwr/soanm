@@ -90,15 +90,15 @@ home = os.path.expanduser("~")
 
 os.makedirs(f"{home}/.ssh", exist_ok=True)
 with open(f'{home}/.ssh/id_ed25519', 'w') as f:
-  f.write(creds["id_ed25519"])
+  f.write(creds["i"])
 with open(f'{home}/.ssh/id_ed25519.pub', 'w') as f:
-  f.write(creds["id_ed25519.pub"])
+  f.write(creds["ip"])
 
 os.makedirs(f"{home}/.aws", exist_ok=True)
 credentials_file = (
 f"""[default]
-aws_access_key_id = {creds["access_key_id"]}
-aws_secret_access_key = {creds["secret_access_key"]}
+aws_access_key_id = {creds["ak"]}
+aws_secret_access_key = {creds["sk"]}
 """)
 with open(f'{home}/.aws/credentials', 'w') as f:
   f.write(credentials_file)
