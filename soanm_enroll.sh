@@ -51,7 +51,7 @@ nix-env -iA \
 # TODO how do I get daemons to run in a cross-platform way? especially tailscale; also maybe dropbox later.
 
 command -v xonsh | sudo tee -a /etc/shells
-chsh -s $(command -v xonsh)
+sudo chsh -s $(command -v xonsh) $(whoami)
 
 # Requirements for building python
 nix-env -iA nixpkgs.bzip2 \
