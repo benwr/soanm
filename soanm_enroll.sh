@@ -79,7 +79,7 @@ nix-env -iA nixpkgs.bzip2 \
 
 asdf plugin-add rust || asdf install rust latest || asdf global rust latest
 
-export SEND_LINK=$0
+export SEND_LINK=$1
 
 xonsh << EOF
 import json
