@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -xe
+
 workdir=$(mktemp -d)
 cd $workdir
 
@@ -7,8 +9,8 @@ cd $workdir
 curl -L https://nixos.org/nix/install | sh
 
 # Source nix
-if [ -e '~/.nix-profile/etc/profile.d/nix.sh' ]; then
-  . '~/.nix-profile/etc/profile.d/nix.sh'
+if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
 elif [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
   . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
 fi
@@ -25,8 +27,7 @@ nix-env -iA \
   nixpkgs.bitwarden-cli \
   nixpkgs.asdf-vm \
   nixpkgs.awscli \
-  nixpkgs.gh \
-  nixpkgs.vimPlugins.vim-plug
+  nixpkgs.gh
 
 # Nice-to-haves:
 nix-env -iA \
@@ -70,26 +71,28 @@ nix-env -iA nixpkgs.bzip2 \
   nixpkgs.zlib \
   nixpkgs.tzdata \
   nixpkgs.autoconf-archive \
-  nixpkgs.bash
-
-asdf plugin-add python
-asdf install python latest
-asdf global python latest
+  nixpkgs.bash \
+  nixpkgs.pkg-config \
+  nixpkgs.gnumake \
+  nixpkgs.clang
 
 asdf plugin-add rust
 asdf install rust latest
 asdf global rust latest
 
-bw receive $1 > credentials.json
-
 xonsh << EOF
 import json
 import os
 
-creds = json.load("credentials.json")
+send_link = input().strip()
+
+creds = \$(bw send receive @(send_link))
+
+creds = json.loads(creds)
 
 home = os.path.expanduser("~")
 
+os.makedirs(f"{home}/.ssh", exist_ok=True)
 with open(f'{home}/.ssh/id_ed25519', 'w') as f:
   f.write(creds["id_ed25519"])
 with open(f'{home}/.ssh/id_ed25519.pub', 'w') as f:
@@ -113,6 +116,10 @@ with open(f'{home}/.aws/config', 'w') as f:
   f.write(config_file)
 EOF
 
-nvim --headless +PlugInstall +q
+chmod 0600 ~/.ssh/id_ed25519
 
-chezmoi init --apply benwr
+chezmoi init --apply git@github.com:benwr/dotfiles
+
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+nvim --headless +PlugInstall +q
