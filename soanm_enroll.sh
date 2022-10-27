@@ -76,9 +76,6 @@ nix-env -iA nixpkgs.bzip2 \
   nixpkgs.gnumake \
   nixpkgs.clang
 
-
-asdf plugin-add rust || asdf install rust latest || asdf global rust latest
-
 echo args $@
 SEND_LINK=$1
 CREDS=$(bw send receive $SEND_LINK)
@@ -121,4 +118,4 @@ chezmoi init --apply git@github.com:benwr/dotfiles
 
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 
-nvim --headless +PlugInstall +q
+nvim --headless +PlugInstall +qa
