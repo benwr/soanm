@@ -33,10 +33,11 @@ corresponding command for you to run on the enrollee (this command will include
 a secret used to securely connect the computers to one another)
 
 The program pairs will be run in order, sorted by filename. For each pair, the
-`sponsor` program is run first, and its output is sent over a `Magic Wormhole`.
-That output is then used as the input to the corresponding `enroll` program. The
-`enroll` output, in turn, is sent back to the sponsor and saved in the
-`results` directory, where it can be used by subsequent `sponsor` programs.
+`sponsor` program is run first, and its output is sent over a [Magic
+Wormhole](https://github.com/magic-wormhole/magic-wormhole.rs). That output is
+then used as the input to the corresponding `enroll` program. The `enroll`
+output, in turn, is sent back to the sponsor and saved in the `results`
+directory, where it can be used by subsequent `sponsor` programs.
 
 Note that on the sponsor machine, the stdin of the configuration programs is
 inherited from the top-level programs, allowing for user input. And on both
