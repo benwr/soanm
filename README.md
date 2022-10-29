@@ -64,4 +64,5 @@ Other possibilities:
   systems, which can be complicated. `soanm` doesn't require anything fancier
   than shell scripting, and lets you write code in any language you want as
   long as you ensure it's installed properly first. You'll also likely need an
-  additional tool for managing your secrets.
+  additional tool for managing your secrets, while with `soanm` you can pipe them
+  safely to the new host from the old one.
