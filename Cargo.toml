@@ -1,5 +1,6 @@
 [package]
 name = "soanm"
+description = "Shell Of A New Machine"
 version = "0.1.0"
 edition = "2021"
 authors = ["Ben Weinstein-Raun"]
