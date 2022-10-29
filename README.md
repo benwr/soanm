@@ -1,19 +1,19 @@
 # Shell Of A New Machine
 
-`soanm` is a tool for easily configuring new UNIX machines, with zero
-prerequisites on the target machine other than running a POSIX-compatible
-operating system with a working Bourne shell (and [Rust platform
-support](https://doc.rust-lang.org/beta/rustc/platform-support.html)).
+`soanm` is a dead-simple tool for easily configuring new UNIX machines, with
+almost zero prerequisites on the target machine. All it needs is `curl` and
+support for [rustup](https://rustup.rs).
 
 ## The Basic Idea
 
 When you install a new operating system on some machine, whether it's a server,
 a laptop, a desktop, or a VM, it can be a hassle to get to the point of feeling
-comfortable in that shell: You use dozens of tools that need to be installed,
+comfortable on that machine: You use dozens of tools that need to be installed,
 and many of these need to be configured. You need to set up Tailscale, and SSH
 keys, and API keys. 
 
-Wouldn't it be great if you could just do this all at once? Well, now you can!
+Wouldn't it be great if you could just do this all at once, in a totally custom
+way? Well, now you can!
 
 You'll need two computers: One "sponsor", which is equipped with any resources
 needed for provisioning the other machine (the "enrollee"). For example, if you
@@ -30,7 +30,7 @@ directories, and these all must be set as executable.
 Once you have created this configuration directory, the provisioning process is
 begun by running `soanm sponsor [conf_directory]`. This will print a
 corresponding command for you to run on the enrollee (this command will include
-a secret used to securely connect the computers to one another)
+a secret used to securely connect the computers to one another).
 
 The program pairs will be run in order, sorted by filename. For each pair, the
 `sponsor` program is run first, and its output is sent over a [Magic
@@ -69,5 +69,5 @@ Other possibilities:
 * You could use a dotfiles manager, like `chezmoi`. These typically won't
   install packages for you, or run arbitrary code, though.
 
-It's also possible that there are tools that will do all of the same things this does.
-If they exist, though, I couldn't find them.
+There are probably a thousand ways to do this kind of task. I couldn't find one
+I liked, so I wrote one that I do. Maybe you'll like it too.

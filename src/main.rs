@@ -5,7 +5,6 @@ use std::process::Stdio;
 use clap::{Parser, Subcommand};
 use magic_wormhole::{transfer::APP_CONFIG, Code, Wormhole, WormholeError};
 use tempfile::TempDir;
-use tracing::info;
 
 #[derive(Parser)]
 #[command(author, version, about)]
@@ -27,6 +26,9 @@ enum Command {
         /// to modify it.
         #[arg(short, long)]
         starting_stage: Option<usize>,
+
+        #[arg(short, long)]
+        passphrase_length: Option<usize>,
     },
     /// Enroll this device, receiving configuration from a remote location
     Enroll { wormhole_code: String },
@@ -85,7 +87,9 @@ async fn sponsor(mut hole: Wormhole, starting_stage: usize) -> Result<(), Error>
         let output = hole.receive().await?;
 
         //   d. Save that output
-        let mut outfile = std::fs::File::create(PathBuf::from("results").join(e.path().file_name().expect("no filename?")))?;
+        let mut outfile = std::fs::File::create(
+            PathBuf::from("results").join(e.path().file_name().expect("no filename?")),
+        )?;
         outfile.write(&output)?;
     }
     Ok(())
@@ -148,16 +152,25 @@ async fn main() -> Result<(), Error> {
         Command::Enroll { wormhole_code } => {
             let dir = TempDir::new()?;
             std::env::set_current_dir(dir.path())?;
-            let (welcome, hole) =
+            let (_welcome, hole) =
                 Wormhole::connect_with_code(APP_CONFIG, Code(wormhole_code.to_string())).await?;
             enroll(hole).await?;
         }
-        Command::Sponsor { path, starting_stage } => {
+        Command::Sponsor {
+            path,
+            starting_stage,
+            passphrase_length,
+        } => {
             let p: PathBuf = path.as_ref().unwrap_or(&PathBuf::from(".")).to_path_buf();
             std::env::set_current_dir(&p)?;
-            let (welcome, holefuture) = Wormhole::connect_without_code(APP_CONFIG, 10).await?;
+            let (welcome, holefuture) =
+                Wormhole::connect_without_code(APP_CONFIG, passphrase_length.unwrap_or(8)).await?;
             eprintln!("On the enrollee, run:\n");
-            eprintln!("curl -fsSL https://github.com/benwr/soanm/releases/[determine host type] > soanm && ./soanm {}", welcome.code);
+            eprintln!(
+                "curl --proto '=https' --tolsv1.2 -fsSL https://sh.rustup.rs | sh -s -- -y; \\\
+                       ~/.cargo/bin/cargo install soanm && ~/.cargo/bin/soanm enroll {}",
+                welcome.code
+            );
             let hole = holefuture.await?;
             sponsor(hole, starting_stage.unwrap_or(0)).await?;
         }
