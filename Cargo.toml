@@ -5,7 +5,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Ben Weinstein-Raun"]
 repository = "https://github.com/benwr/soanm"
-license = "CC0 OR Apache-2.0"
+license = "CC0-1.0 OR Apache-2.0"
 
 [dependencies]
 clap = { version = "4", features = ["derive"] }
