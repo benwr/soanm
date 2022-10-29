@@ -66,3 +66,8 @@ Other possibilities:
   long as you ensure it's installed properly first. You'll also likely need an
   additional tool for managing your secrets, while with `soanm` you can pipe them
   safely to the new host from the old one.
+* You could use a dotfiles manager, like `chezmoi`. These typically won't
+  install packages for you, or run arbitrary code, though.
+
+It's also possible that there are tools that will do all of the same things this does.
+If they exist, though, I couldn't find them.
