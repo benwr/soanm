@@ -1,8 +1,13 @@
 # Shell Of A New Machine
 
 `soanm` is a dead-simple tool for easily configuring new UNIX machines, with
-almost zero prerequisites on the target machine. All it needs is `curl` and
-support for [rustup](https://rustup.rs).
+almost zero prerequisites on the target machine. All it needs is `curl`.
+
+Right now it works on MacOS and Linux on both aarch64 and x86_64, and OpenBSD
+on x86_64. These are the systems I typically use and can easily build on, but
+porting it to new platforms is as simple as compiling a new static Rust binary
+and adding it to the release on Github. If you want support for a new platform,
+add an issue and I'll be happy to get it ported.
 
 ## The Basic Idea
 
