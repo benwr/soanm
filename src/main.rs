@@ -89,6 +89,18 @@ async fn sponsor(mut hole: Wormhole, starting_stage: usize) -> Result<(), Error>
                 .stdin(Stdio::inherit())
                 .spawn()?;
             let output = child.wait_with_output()?;
+
+            if !output.status.success() {
+                return Err(Error::IO(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    format!(
+                        "Running {} failed on sponsor with code {}",
+                        e.path().display(),
+                        output.status.code().unwrap()
+                    ),
+                )));
+            }
+
             //   b. Send its output to the remote
             hole.send(output.stdout).await?;
         }
