@@ -10,7 +10,7 @@ When you install a new operating system on some machine, whether it's a server,
 a laptop, a desktop, or a VM, it can be a hassle to get to the point of feeling
 comfortable on that machine: You use dozens of tools that need to be installed,
 and many of these need to be configured. You need to set up Tailscale, and SSH
-keys, and API keys. 
+keys, and API keys.
 
 Wouldn't it be great if you could just do this all at once, in a totally custom
 way? Well, now you can!
@@ -43,6 +43,43 @@ Note that on the sponsor machine, the stdin of the configuration programs is
 inherited from the top-level programs, allowing for user input. And on both
 sponsor and enrollee machines, stderr is printed to the corresponding terminal.
 
+## How to use it
+
+The sponsor machine needs a relatively recent rust version, and a directory
+with a subdirectory for the `sponsor` programs, one for the `enroll` programs,
+and an empty one called `results`.
+
+```bash
+cargo install soanm
+soanm sponsor config_dir
+```
+
+This will print out a command, which should be run on the enrollee.
+
+## Security considerations
+
+Under some assumptions, it should be relatively safe to use this tool to pass
+secrets around.
+
+You obviously have to trust that the release binaries provided here are not
+malicious. I hereby stake my reputation on the claim that I built them myself
+from the sources contained in this repository, which (of course) does not
+contain malicious code. But if you don't trust me, or the tree of dependencies
+I used to build these binaries, you should verify that the release binaries
+look safe. This also requires trusting GitHub to faithfully serve binaries that
+have been uploaded, as well as trusting that no one has unauthorized access to
+my Github account. For obvious reasons I try hard to protect my Github account,
+and I promise that I will never hand control of this repository to anyone else.
+
+You also need to trust the `magic-wormhole` protocol. We use the default
+magic-wormhole rendezvous server (`ws://relay.magic-wormhole.io:4000/v1`) to
+establish a secure peer-to-peer connection, over which files are transmitted.
+We default to using a 128-bit passphrase (16 words) for the initial rendezvous,
+though this is configurable on the sponsor command line. We have chosen to use
+very long passphrases by default, since we want an extremely low probability of
+being man-in-the-middled, and since the usual scenario is that you're
+copy/paste-ing the passphrase from one shell to another.
+
 ## Why not just use [a different tool]?
 
 There are lots of tools that could be used for parts of this task. Foremost
@@ -63,11 +100,15 @@ Other possibilities:
   tool installed on the host, and of course you need to learn how to use these
   systems, which can be complicated. `soanm` doesn't require anything fancier
   than shell scripting, and lets you write code in any language you want as
-  long as you ensure it's installed properly first. You'll also likely need an
-  additional tool for managing your secrets, while with `soanm` you can pipe them
-  safely to the new host from the old one.
+  long as you ensure it's installed properly by an earlier stage. With most of
+  these other tools, you'll likely need an additional tool for managing your
+  secrets, while with `soanm` you can pipe them safely to the new host from
+  the old one.
 * You could use a dotfiles manager, like `chezmoi`. These typically won't
   install packages for you, or run arbitrary code, though.
+
+You can easily combine `soanm` with any of these other methods, if that's what
+you'd like to do.
 
 There are probably a thousand ways to do this kind of task. I couldn't find one
 I liked, so I wrote one that I do. Maybe you'll like it too.

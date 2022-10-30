@@ -8,8 +8,8 @@ repository = "https://github.com/benwr/soanm"
 license = "CC0-1.0 OR Apache-2.0"
 
 [dependencies]
-clap = { version = "4", features = ["derive"] }
-clap-verbosity-flag = "2"
+clap = { version = "3", features = ["derive"] }
+clap-verbosity-flag = "1"
 flate2 = "1"
 log = "0.4"
 magic-wormhole = "0.5"
@@ -20,3 +20,9 @@ tokio = { version = "1", features = ["fs", "macros", "process", "rt", "rt-multi-
 tracing = { version = "0.1" }
 tracing-subscriber = "0.3"
 
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "z"
+panic = "abort"
+strip = true

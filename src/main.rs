@@ -7,9 +7,9 @@ use magic_wormhole::{transfer::APP_CONFIG, Code, Wormhole, WormholeError};
 use tempfile::TempDir;
 
 #[derive(Parser)]
-#[command(author, version, about)]
+#[clap(author, version, about)]
 struct Cli {
-    #[command(subcommand)]
+    #[clap(subcommand)]
     command: Command,
 
     #[clap(flatten)]
@@ -20,15 +20,15 @@ struct Cli {
 enum Command {
     /// Initiate an enrollment
     Sponsor {
-        /// The location of the configuration files
+        /// The location of the configuration programs
         path: Option<PathBuf>,
         /// The first stage to run. This is useful in development when a stage fails and you need
         /// to modify it.
-        #[arg(short, long)]
+        #[clap(short, long)]
         starting_stage: Option<usize>,
 
-        #[arg(short, long)]
-        passphrase_length: Option<usize>,
+        #[clap(default_value_t=16, short, long)]
+        passphrase_length: usize,
     },
     /// Enroll this device, receiving configuration from a remote location
     Enroll { wormhole_code: String },
@@ -164,11 +164,11 @@ async fn main() -> Result<(), Error> {
             let p: PathBuf = path.as_ref().unwrap_or(&PathBuf::from(".")).to_path_buf();
             std::env::set_current_dir(&p)?;
             let (welcome, holefuture) =
-                Wormhole::connect_without_code(APP_CONFIG, passphrase_length.unwrap_or(8)).await?;
+                Wormhole::connect_without_code(APP_CONFIG, *passphrase_length).await?;
             eprintln!("On the enrollee, run:\n");
             eprintln!(
-                "curl --proto '=https' --tolsv1.2 -fsSL https://sh.rustup.rs | sh -s -- -y; \\\
-                       ~/.cargo/bin/cargo install soanm && ~/.cargo/bin/soanm enroll {}",
+                "curl --proto '=https' --tlsv1.2 -fsSL \
+                https://github.com/benwr/soanm/releases/download/0.1.1/enroll.sh | sh -s -- {}",
                 welcome.code
             );
             let hole = holefuture.await?;
