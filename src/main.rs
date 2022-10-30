@@ -52,7 +52,7 @@ impl From<WormholeError> for Error {
     }
 }
 
-async fn sponsor(mut hole: Wormhole, starting_stage: usize) -> Result<(), Error> {
+async fn sponsor(hole: &mut Wormhole, starting_stage: usize) -> Result<(), Error> {
     // 1. Tar and feather the enrollee programs
     let mut tarball = vec![];
     let enc = flate2::write::GzEncoder::new(&mut tarball, flate2::Compression::default());
@@ -117,7 +117,7 @@ async fn sponsor(mut hole: Wormhole, starting_stage: usize) -> Result<(), Error>
     Ok(())
 }
 
-async fn enroll(mut hole: Wormhole) -> Result<(), Error> {
+async fn enroll(hole: &mut Wormhole) -> Result<(), Error> {
     let tarball_bytes = hole.receive().await?;
     let mut archive = tar::Archive::new(flate2::read::GzDecoder::new(tarball_bytes.as_slice()));
     archive.unpack(".")?;
@@ -174,9 +174,10 @@ async fn main() -> Result<(), Error> {
         Command::Enroll { wormhole_code } => {
             let dir = TempDir::new()?;
             std::env::set_current_dir(dir.path())?;
-            let (_welcome, hole) =
+            let (_welcome, mut hole) =
                 Wormhole::connect_with_code(APP_CONFIG, Code(wormhole_code.to_string())).await?;
-            enroll(hole).await?;
+            enroll(&mut hole).await?;
+            hole.close().await?;
         }
         Command::Sponsor {
             path,
@@ -193,8 +194,9 @@ async fn main() -> Result<(), Error> {
                 https://github.com/benwr/soanm/releases/download/0.1.1/enroll.sh | sh -s -- {}",
                 welcome.code
             );
-            let hole = holefuture.await?;
-            sponsor(hole, starting_stage.unwrap_or(0)).await?;
+            let mut hole = holefuture.await?;
+            sponsor(&mut hole, starting_stage.unwrap_or(0)).await?;
+            hole.close().await?;
         }
     }
     Ok(())
