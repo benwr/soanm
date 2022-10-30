@@ -27,7 +27,7 @@ enum Command {
         #[clap(short, long)]
         starting_stage: Option<usize>,
 
-        #[clap(default_value_t=16, short, long)]
+        #[clap(default_value_t = 16, short, long)]
         passphrase_length: usize,
     },
     /// Enroll this device, receiving configuration from a remote location
@@ -58,7 +58,17 @@ async fn sponsor(mut hole: Wormhole, starting_stage: usize) -> Result<(), Error>
     let enc = flate2::write::GzEncoder::new(&mut tarball, flate2::Compression::default());
     let mut tar = tar::Builder::new(enc);
     // (the programs in 'enroll' are in the top-level of the archive)
-    tar.append_dir_all(".", "enroll")?;
+
+    for entry in &std::fs::read_dir("enroll")?
+        .filter_map(|r| r.ok())
+        .collect::<Vec<_>>()[starting_stage..]
+    {
+        tar.append_path_with_name(
+            entry.path(),
+            entry.path().file_name().expect("Expected file name"),
+        )?;
+    }
+
     drop(tar);
 
     // 2. Send them over
